@@ -21,10 +21,7 @@ namespace Web
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            string token = await _jsRuntime.InvokeAsync<string>(
-                "localstorage.getItem",
-                "jwtToken"
-            );
+            string token = await _jsRuntime.InvokeAsync<string>("localstorage.getItem", "jwtToken");
 
             if (!string.IsNullOrEmpty(token))
             {
