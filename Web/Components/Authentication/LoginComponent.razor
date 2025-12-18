@@ -1,22 +1,6 @@
-﻿@using Shared.DTOs.Teacher
-@using Web.Services.Interfaces
-@inject ITest _test
+﻿
 
 
-@foreach (var item in items)
-{
-    <p>@item.Vorname</p>
-}
-@code {
-    private List<TeacherDTO> items = new List<TeacherDTO>();
-
-    protected override async Task OnInitializedAsync()
-    {
-        items = await _test.GetTeachersAsync();
-    }
-}
-
-@* 
 <h2 class="text-center">Login</h2>
 
 <form>
@@ -50,4 +34,4 @@
             </div>
         </div>
     </div>
-</div> *@
+</div>

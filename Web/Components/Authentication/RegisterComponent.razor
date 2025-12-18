@@ -1,22 +1,17 @@
-﻿
+﻿@using Shared.DTOs.Teacher
+@using Web.Services.Interfaces
+@inject ITest _test
 
-<h2 class="text-center">Register</h2>
 
-<form>
-    <div class="form-group">
-        <label for="exampleInputEmail1">Email adresse</label>
-        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-    </div>
-    <div class="form-group pb-2">
-        <label for="exampleInputUsername1">Benutzername</label>
-		<input type="text" class="form-control" id="exampleInputUsername1">
-	</div>
-    <div class="form-group pb-2">
-        <label for="exampleInputPassword1">Passwort</label>
-        <input type="password" class="form-control" id="exampleInputPassword1">
-    </div>
+@foreach (var item in items)
+{
+    <p>@item.Vorname</p>
+}
+@code {
+    private List<TeacherDTO> items = new List<TeacherDTO>();
 
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#todoModal">
-        Submit
-    </button>
-</form>
+    protected override async Task OnInitializedAsync()
+    {
+        items = await _test.GetTeachersAsync();
+    }
+}
