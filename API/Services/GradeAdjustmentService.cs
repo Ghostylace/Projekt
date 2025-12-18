@@ -1,66 +1,66 @@
-﻿using Shared.DTOs;
+﻿using API.Models;
+using API.Services.Interfaces;
+using Shared.Dtos;
 using Supabase;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
-namespace API.Services;
-
-    public class NotenanpassungService
+namespace API.Services
+{
+    public class GradeAdjustmentService : IGradeAdjustmentService
     {
         private readonly Client _supabase;
 
-        public NotenanpassungService(Client supabase)
+        public GradeAdjustmentService(Client supabase)
         {
             _supabase = supabase;
         }
 
-        // Antrag erstellen
-        public async Task<GradadjustmentDto> CreateAsync(CreateAntragRequest req)
+        public async Task<GradeAdjustment> CreateAsync(CreateGradeAdjustmentRequest request)
         {
-            var antrag = new NotenanpassungAntrag
+            var entity = new GradeAdjustment
             {
-                LehrpersonID = req.LehrpersonID,
-                ProrektorID = req.ProrektorID,
-                LernenderID = req.LernenderID,
-                ModulID = req.ModulID,
-                AlteNote = req.AlteNote,
-                NeueNote = req.NeueNote,
-                Bemerkungen = req.Bemerkungen,
+                TeacherId = request.TeacherId,
+                ProrectorId = request.ProrectorId,
+                StudentId = request.StudentId,
+                ModuleId = request.ModuleId,
+                OldGrade = request.OldGrade,
+                NewGrade = request.NewGrade,
+                Remarks = request.Remarks,
                 Status = "EINGEREICHT",
-                Antragsdatum = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow
             };
 
             var result = await _supabase
-                .From<NotenanpassungAntrag>()
-                .Insert(antrag);
+                .From<GradeAdjustment>()
+                .Insert(entity);
 
             return result.Models.First();
         }
 
-        // Alle Anträge holen
-        public async Task<List<NotenanpassungAntrag>> GetAllAsync()
+        public async Task<List<GradeAdjustment>> GetAllAsync()
         {
             var response = await _supabase
-                .From<NotenanpassungAntrag>()
+                .From<GradeAdjustment>()
                 .Select("*")
                 .Get();
 
             return response.Models;
         }
 
-        // Status aktualisieren
-        public async Task UpdateStatusAsync(int antragId, string newStatus, string? grund = null)
+        public async Task UpdateStatusAsync(int id, UpdateGradeAdjustmentStatusRequest request)
         {
-            var values = new Dictionary<string, object?>
-        {
-            { "Status", newStatus },
-            { "Ablehnungsgrund", grund }
-        };
+            var updateEntity = new GradeAdjustment
+            {
+                Id = id,
+                Status = request.Status,
+                RejectionReason = request.RejectionReason,
+                ReviewedAt = DateTime.UtcNow
+            };
 
             await _supabase
-                .From<NotenanpassungAntrag>()
-                .Where(a => a.AntragID == antragId)
-                .Update(values);
+                .From<GradeAdjustment>()
+                .Where(x => x.Id == id)
+                .Update(updateEntity);
         }
-    }
 
+    }
+}

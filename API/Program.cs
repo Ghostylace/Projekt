@@ -1,5 +1,7 @@
-using Supabase;
+using API.Services;
+using API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Supabase;
 
 namespace API
 {
@@ -42,6 +44,7 @@ namespace API
                     }
                 );
             });
+            builder.Services.AddScoped<IGradeAdjustmentService, GradeAdjustmentService>();
 
             var app = builder.Build();
 
