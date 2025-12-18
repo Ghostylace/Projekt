@@ -1,5 +1,4 @@
-﻿using System.Net.Mime;
-using API.Models;
+﻿using API.Models;
 using API.Services.Abstract;
 using Shared.DTOs.Teacher;
 using Supabase;
@@ -64,17 +63,6 @@ public class LehrerService : ILehrerService
             });
         }
         return toReturn;
-    }
-
-    private async Task<TeacherDTO> ConvertSingle(Teacher input)
-    {
-        return new TeacherDTO()
-        {
-            Id = input.Id,
-            Vorname = input.Vorname,
-            Nachname = input.Nachname,
-            Email = input.Email,
-        };
     }
 
     //public async Task<List<TeacherDTO>?> AddTeacher(Teacher teacher)
