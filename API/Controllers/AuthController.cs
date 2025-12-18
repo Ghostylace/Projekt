@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Text;
 using API.Configuration;
 using API.Services.Abstract;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

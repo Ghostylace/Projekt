@@ -1,4 +1,5 @@
 using API.Services;
+using API.Services.Interfaces;
 using Supabase;
 
 namespace API
@@ -10,26 +11,44 @@ namespace API
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
             builder.Services.AddControllers();
             builder.Services.AddServiceLayer();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            string supabaseUrl = "https://olmehzdalfbpvuicvrzb.supabase.co";
-            string supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9sbWVoemRhbGZicHZ1aWN2cnpiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3NzQxNjksImV4cCI6MjA4MDM1MDE2OX0.kIh6DFZ1vvuEX2fMTSrfmpKZ1XXTod7VWm2u1Ro2pPw";
-            SupabaseOptions options = new SupabaseOptions
+            // CORS konfigurieren
+            builder.Services.AddCors(options =>
             {
-                AutoRefreshToken = true,
-                AutoConnectRealtime = true,
-            };
+                options.AddPolicy("AllowSpecificOrigin", policy =>
+                {
+                    policy
+                        .WithOrigins(
+                            "https://localhost:7038",
+                            "http://localhost:5000",
+                            "https://localhost:7113")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
+            });
 
-            builder.Services.AddSingleton(provider => new Client(supabaseUrl, supabaseKey, options));
+            // Supabase Client registrieren
+            builder.Services.AddSingleton(provider =>
+            {
+                return new Client(
+                    builder.Configuration["Supabase:Url"],
+                    builder.Configuration["Supabase:AnonKey"],
+                    new SupabaseOptions
+                    {
+                        AutoConnectRealtime = true
+                    }
+                );
+            });
+            builder.Services.AddScoped<IGradeAdjustmentService, GradeAdjustmentService>();
 
-            WebApplication app = builder.Build();
+            var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -38,8 +57,11 @@ namespace API
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            app.UseRouting();
 
+            app.UseCors("AllowSpecificOrigin");
+
+            app.UseAuthorization();
 
             app.MapControllers();
 

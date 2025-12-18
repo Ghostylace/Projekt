@@ -26,4 +26,16 @@ public class LehrerController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpGet("{email}")]
+    public async Task<ActionResult<List<TeacherDTO>?>> GetTeacherByEmail([FromBody] string email)
+    {
+        List<TeacherDTO>? result = await _lehrerService.GetTeacherByEmail(email);
+
+        if(result == null)
+        {
+            return BadRequest("Something went wrong while getting shi from email");
+        }
+        return Ok(result);
+    }
 }
